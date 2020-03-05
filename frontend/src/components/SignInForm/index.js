@@ -1,16 +1,17 @@
 import React, {Component}                from "react";
 import {Formik, Form, Field, withFormik} from 'formik'
 import PropTypes                         from 'prop-types'
+import Input                             from "../Input";
 
 const handleSubmit = (values) => {
-    console.log(values);
+
 };
 
 const SignInForm = (props) => {
     const {initialValues} = props;
     return (
         <Form>
-            <Field type='login' name='login'/>
+            <Field validate={} type='login' name='login' component={Input}/>
             <Field type='password' name='password'/>
             <div onClick={props.submitForm}>Login</div>
         </Form>
