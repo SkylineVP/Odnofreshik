@@ -1,55 +1,55 @@
-const {User} = require('../models');
-const Controller = require('../utils/Controller');
+import { User } from './../models';
+
+import Controller from './../utils/controller';
 
 class UserController {
-    constructor() {
-        this.controller = new Controller(User);
+
+  constructor () {
+    this._controller = new Controller( User );
+  }
+
+  createUser = async (req, res, next) => {
+    try {
+      const userData = (await this._controller.create( req.body )).get();
+      delete userData.password;
+      res.status( 201 ).send( userData );
+    } catch (e) {
+      next( e );
     }
+  };
 
-    createUser = async (req, res, next) => {
-        try {
-            const newUser = await this.controller.create(req.body);
-            const userData = newUser.get();
-            delete userData.password;
-            res.send(userData);
+  deleteUserById = async (req, res, next) => {
+    try {
+      res.send( `${await this._controller.delete( req.params.id )}` );
+    } catch (e) {
+      next( e );
+    }
+  };
 
-        }
-        catch (e) {
-            next(e);
-        }
-    };
-    updateUserById = async (req, res, next) => {
-        try {
-            const updatedUser = await this.controller.update(req.params.id, req.body);
-            const data = updatedUser.get();
-            delete data.password;
-            return res.send(data);
-        }
-        catch (e) {
-            next(e);
-        }
+  getUserById = async (req, res, next) => {
+    try {
 
-    };
-    getUserById = async (req, res, next) => {
-        try {
-            res.send(await this.controller.read(req.params.id, {
-                attributes: {
-                    exclude: ['password'],
-                }
-            }));
+      res.send( await this._controller.read( req.params.id, {
+        attributes: {
+          exclude: ['password']
         }
-        catch (e) {
-            next(e);
-        }
-    };
-    deleteUserById = async (req, res, next) => {
-        try {
-            res.send(`${await this.controller.delete(req.params.id)}`);
-        }
-        catch (e) {
-            next(e);
-        }
-    };
+      } ) );
+
+    } catch (e) {
+      next( e );
+    }
+  };
+
+  updateUserById = async (req, res, next) => {
+    try {
+      const userData = (await this._controller.update( req.params.id, req.body )).get();
+      delete userData.password;
+      res.send( userData );
+    } catch (e) {
+      next( e );
+    }
+  };
+
 }
 
-module.exports = new UserController();
+export default new UserController();

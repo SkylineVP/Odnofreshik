@@ -1,25 +1,15 @@
-import React        from "react";
-import {withRouter} from "react-router"
+import React, { Component } from 'react';
+import { withRouter }       from 'react-router';
+import { AppContext }       from '../App.js';
 
-function HomePage(props) {
-    console.log(props);
-    return (
-        <>
-            <h1>Home</h1>
-            <button onClick={() => {
-                props.history.push('/sign_up');
-            }}>Sign Up
-            </button>
-            <button onClick={() => {
-                props.history.push('/sign_in');
-            }}>Sign In
-            </button>
-        </>
+class HomePage extends Component {
 
+	render() {
+		return null;
 
-    )
-
-
+	}
 }
+
+HomePage.contextType = AppContext;
 
 export default withRouter(HomePage);

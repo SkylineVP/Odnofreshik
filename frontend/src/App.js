@@ -1,28 +1,56 @@
-import React      from 'react';
-import {
-    BrowserRouter as Router,
-    Switch,
-    Route,
-    Link
-}                 from "react-router-dom";
-import HomePage   from "./pages/HomePage";
-import SignInPage from "./pages/SignInPage";
-import SignUpPage from "./pages/SignUpPage";
+import React, { Component, lazy, Suspense }       from 'react';
+import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+import './App.scss';
+import { THEME_MODE }                             from './constants/enums.js';
+import PageHeader                                 from "./components/PageHeader";
+import Navigation                                 from "./components/Navigation";
 
+const SignUpPage = lazy( () => import( './pages/SignUpPage/SignUpPage.js' ) );
+const SignInPage = lazy( () => import( './pages/SignInPage/SignInPage.js' ) );
+const HomePage = lazy( () => import( './pages/HomePage.js' ) );
 
-function App() {
-    return (<Router>
+const fallbackElem = <div className='loader'>Loading...</div>;
+
+export const AppContext = React.createContext( {} );
+
+class App extends Component {
+
+  state = {
+    theme: THEME_MODE.LIGHT,
+  };
+
+  changeTheme = () => {
+    this.setState( state => ({
+      theme: state.theme === THEME_MODE.LIGHT
+             ? THEME_MODE.DARK
+             : THEME_MODE.LIGHT,
+    }) );
+  };
+
+  render () {
+
+    const contextValue = {
+      state: this.state,
+      changeTheme: this.changeTheme
+    };
+    return (
+      <AppContext.Provider value={contextValue}>
+        <Router>
+          <PageHeader className='pageHeader'>
+            Odnofreshnik
+            <Navigation/>
+          </PageHeader>
+          <Suspense fallback={fallbackElem}>
             <Switch>
-                <Route path='/' exact children={HomePage}></Route>
-                <Route path="/sign_in" render={SignInPage}></Route>
-                <Route path="/sign_up">
-                    <SignUpPage/>
-                </Route>
+              <Route exact path="/" component={HomePage}/>
+              <Route path={['/signup', '/sign_up']} component={SignUpPage}/>
+              <Route path={['/signin', '/sign_in', '/login']} component={SignInPage}/>
             </Switch>
+          </Suspense>
         </Router>
-
-
+      </AppContext.Provider>
     );
+  }
 }
 
 export default App;

@@ -1,58 +1,65 @@
-const {Task} = require('../models');
-const Controller = require('../utils/Controller');
+import { Task }   from './../models';
+import Controller from './../utils/controller';
 
 class TaskController {
-    constructor() {
-        this.controller = new Controller(Task);
+
+  constructor () {
+    this._controller = new Controller( Task );
+  }
+
+  createTask = async (req, res, next) => {
+    try {
+      res.send( await this._controller.create( {
+                                                 ...req.body,
+                                                 userId: req.authorizationData.id
+                                               } ) );
+    } catch (e) {
+      next( e );
     }
+  };
 
-    createTask = async (req, res, next) => {
-        try {
-            return res.send(await this.controller.create(req.body));
-        }
-        catch (e) {
-            next(e);
-        }
-    };
-    updateTaskById = async (req, res, next) => {
-        try {
-            return res.send(await this.controller.update(req.params.id, req.body));
-        }
-        catch (e) {
-            next(e);
-        }
-    };
-    getTaskById = async (req, res, next) => {
-        try {
-            res.send(await this.controller.read(req.params.id));
-        }
-        catch (e) {
-            next(e);
-        }
-    };
-    deleteTaskById = async (req, res, next) => {
-        try {
-            res.send(`${await this.controller.delete(req.params.id)}`);
-        }
-        catch (e) {
-            next(e);
-        }
-    };
-    getUserTasks = async (req, res, next) => {
-        try {
+  deleteTaskById = async (req, res, next) => {
+    try {
+      res.send( {
+                  isDeleted: (await this._controller.delete( req.params.id )) === '1'
+                } );
+    } catch (e) {
+      next( e );
+    }
+  };
 
-            const tasks = await Task.findAll({
-                where: {
-                    userId: req.authorizationData.id,
-                },
-                order: [['createdAt', 'DESC']]
-            });
-            res.send(tasks);
-        }
-        catch (e) {
-            next(e);
-        }
-    };
+  getTaskById = async (req, res, next) => {
+    try {
+      res.send( await this._controller.read( req.params.id ) );
+    } catch (e) {
+      next( e );
+    }
+  };
+
+  updateTaskById = async (req, res, next) => {
+    try {
+
+      res.send( await this._controller.update( req.params.id, req.body ) );
+
+    } catch (e) {
+      next( e );
+    }
+  };
+  getUserTasks = async (req, res, next) => {
+    try {
+      const userTasks = await Task.findAll( {
+                                              where: {
+                                                userId: req.authorizationData.id,
+                                              },
+                                              limit: 10,
+                                              order: [['createdAt', 'DESC']]
+                                            } );
+
+      res.send( userTasks );
+    } catch (e) {
+      next( e );
+    }
+  };
 }
 
-module.exports = new TaskController();
+export default new TaskController();

@@ -1,3 +1,4 @@
+import authenticationRouter from './authentication';
 const express = require('express');
 const userRouter = require('./user');
 const taskRouter = require('./task');
@@ -7,10 +8,10 @@ const errorHandler = require('../middlewares/error_handlers');
 const router = express.Router();
 
 router.use('/admin', adminRouter);
-router.route('/sign_in').post((req, res, next) => res.send('6'));
+router.use(authenticationRouter);
 router.use(checkAuthorization);
 router.use(userRouter);
 router.use(taskRouter);
-router.use(errorHandler);
+//router.use(errorHandler);
 
 module.exports = router;
