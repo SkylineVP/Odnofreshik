@@ -51,20 +51,21 @@ const SignupSchema = yup.object().shape({
 	email: yup.string()
 			  .email('Invalid email')
 			  .required('Required'),
-	password:yup.string().min(8).max(50).required()
+	password: yup.string().required('Password is required'),
+	confirmPassword: yup.string()
+							 .oneOf([yup.ref('password'), null], 'Passwords must match')
 });
 const SignUpForm = ( props ) => {
-	console.log(props);
 	const {values, isSubmitting} = props;
 	return (
 		<Form className={styles.form}>
 			<FieldArray
-				name={fields}
+				name='fields'
 				render={arrayHelpers => (
 					<div>
-						{fields.map(( field, index ) => (
+						{values.fields.map(( field, index ) => (
 							<div key={index}>
-								<Field name={field.name} value={values[field.name]}>
+								<Field name={field.name} value={values[field.name]} >
 									{
 										fieldProps => (
 											<Label className={styles.fieldWrapper}>
@@ -94,10 +95,12 @@ export default withFormik(
 			lastName: '',
 			email: "",
 			password: "",
-			confirmPassword:""
+			confirmPassword:"",
+			fields
 		}),
 		handleSubmit: (values, formikBag) => { alert( JSON.stringify( values, null, 4 ) ); },
-		validationSchema: SignupSchema
+		validationSchema: SignupSchema,
+		validate:(props,...rest)=>{console.log(props,rest); }
 	}
 )(SignUpForm);
 

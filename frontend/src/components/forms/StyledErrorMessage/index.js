@@ -5,13 +5,14 @@ import classNames       from 'classnames';
 import styles           from './StyledErrorMessage.module.scss';
 
 const StyledErrorMessage = ({ name, className, ...rest }) => {
-
   const classNameValue = classNames( styles.error, className );
 
   return (
     <ErrorMessage name={name}>
       {
-        msg => <span {...rest} className={classNameValue}>{msg}</span>
+        msg => {
+            console.log(msg);
+            return <span {...rest} className={classNameValue}>{msg}</span>}
       }
     </ErrorMessage>
   );
